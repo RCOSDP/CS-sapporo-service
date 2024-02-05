@@ -11,6 +11,14 @@
 
 **This repository is forked from [GitHub - sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) (1.6.1). We are adding features such as reading and writing files for the purpose of integrating with GRDM.**
 
+## Document for This Fork
+
+- As for the changes,
+  - Added `rdmclient` ([GitHub - RCOSDP/rdmclient](https://github.com/RCOSDP/rdmclient)) to the Docker image
+  - Added a feature to download the workflow attachment from RDM during workflow execution, and upload the execution results to RDM after workflow execution
+- GitHub Actions are not enabled on the repository side
+  - These actions are not necessary, but they are kept considering the follow-up with the upstream
+
 ---
 
 The sapporo-service is a standard implementation conforming to the [Global Alliance for Genomics and Health](https://www.ga4gh.org) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
