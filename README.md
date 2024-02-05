@@ -90,6 +90,24 @@ The execution result will be saved under `sapporo_run/<run_id>` in GRDM. (If you
 
 ---
 
+You can use the native Sapporo authentication mechanism for Sapporo authentication. Please refer to the `Authentication` section below.
+
+---
+
+Since it is still under development, I are building the [Dockerfile-dev](`./Dockerfile-dev`) and pushing it to ghcr.io (<https://github.com/RCOSDP/CS-sapporo-service/pkgs/container/cs-sapporo-service>).
+Also, we have prepared a compose file using the image that has already been pushed, [compose.dev-deploy.yml](`./compose.dev-deploy.yml`).
+
+Image の build と push は以下のように行います。
+
+```bash
+$ docker buildx build \
+  --platform linux/amd64 \
+  -t ghcr.io/rcosdp/cs-sapporo-service:latest \
+  -t ghcr.io/rcosdp/cs-sapporo-service:$(date +%Y%m%d) \
+  -f Dockerfile-dev . \
+  --push
+```
+
 ## Original Document
 
 The sapporo-service is a standard implementation conforming to the [Global Alliance for Genomics and Health](https://www.ga4gh.org) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
