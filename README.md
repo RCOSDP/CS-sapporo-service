@@ -9,6 +9,10 @@
 
 <img src="https://raw.githubusercontent.com/sapporo-wes/sapporo/main/logo/sapporo-service.svg" width="400" style="display: block; margin-left: auto; margin-right: auto; margin-top: 30px; margin-bottom: 30px;" alt="sapporo-service logo">
 
+**This repository is forked from [GitHub - sapporo-wes/sapporo-service](https://github.com/sapporo-wes/sapporo-service) (1.6.1). We are adding features such as reading and writing files for the purpose of integrating with GRDM.**
+
+---
+
 The sapporo-service is a standard implementation conforming to the [Global Alliance for Genomics and Health](https://www.ga4gh.org) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
 
 We have also extended the API specification.
