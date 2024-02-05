@@ -21,6 +21,77 @@
 
 ---
 
+Authentication for GRDM, etc. is written in `tags` and `workflow_attachment` of `POST /runs`.
+
+For an actual execution example, please refer to [./test-run-wf.sh](./test-run-wf.sh).
+Here are examples of `tags` and `workflow_attachment`:
+
+```bash
+readonly tags=$(
+    cat <<EOF
+{
+  "grdm_token": "${GRDM_TOKEN}",
+  "project_id": "${PROJECT_ID}"
+}
+EOF
+)
+readonly workflow_attachment='[
+  {
+    "file_url": "ERR034597_1.small.fq.gz",
+    "file_name": "ERR034597_1.small.fq.gz"
+  },
+]'
+```
+
+Please set the following:
+
+- `tags.grdm_token`: PAT (Personal Access Token) for GRDM
+- `tags.project_id`: Project ID of GRDM (e.g., `436t2`)
+- `workflow_attachment.[].file_url`: The path of the file in the GRDM file tree. Please specify in the format `path/to/dir/file`.
+- `workflow_attachment.[].file_name`: The file path when saving the attachment in the Sapporo run directory. Please specify in the format `path/to/dir/file`. In this case, a directory named `path/to/dir` will be created, and the file will be saved as `file` within it.
+
+As a test, let's actually run [./test-run-wf.sh](./test-run-wf.sh).
+
+```bash
+$ docker compose -f compose.dev.yml up -d --build
+...
+[+] Running 1/1
+ ✔ Container sapporo-service-dev  Started     
+
+$ docker compose -f compose.dev.yml exec app sapporo
+[2024-02-05 05:58:18,435] DEBUG in app: config: {'host': '0.0.0.0', 'port': 1122, 'debug': True, 'run_dir': PosixPath('/home/suecharo/git/github.com/RCOSDP/CS-sapporo-service/run'), 'sapporo_version': '1.6.1', 'get_runs': True, 'workflow_attachment': True, 'registered_only_mode': False, 'service_info': PosixPath('/app/sapporo/service-info.json'), 'executable_workflows': PosixPath('/app/sapporo/executable_workflows.json'), 'run_sh': PosixPath('/app/sapporo/run.sh'), 'url_prefix': '/', 'access_control_allow_origin': '*', 'auth_config': PosixPath('/app/sapporo/auth_config.json')}
+ * Serving Flask app 'sapporo.app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:1122
+ * Running on http://172.18.0.2:1122
+Press CTRL+C to quit
+...
+
+$ export GRDM_TOKEN=...
+$ export PROJECT_ID=...
+
+$ GRDM_TOKEN=${GRDM_TOKEN} PROJECT_ID=${PROJECT_ID} bash ./test-run-wf.sh
+POST /runs is succeeded:
+{
+  "run_id": "cc7f6fb2-31ea-4f3d-bccb-411070447dca"
+}
+
+Please access to the following URL to get the run status:
+
+curl -fsSL -X GET http://127.0.0.1:1122/runs/cc7f6fb2-31ea-4f3d-bccb-411070447dca
+
+$ curl -fsSL -X GET http://127.0.0.1:1122/runs/cc7f6fb2-31ea-4f3d-bccb-411070447dca
+...
+```
+
+The execution result will be saved under `sapporo_run/<run_id>` in GRDM. (If you want to change it, please modify `run.sh`)
+
+---
+
+## Original Document
+
 The sapporo-service is a standard implementation conforming to the [Global Alliance for Genomics and Health](https://www.ga4gh.org) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
 
 We have also extended the API specification.
