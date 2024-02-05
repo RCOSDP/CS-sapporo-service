@@ -138,7 +138,15 @@ function cancel_cwltool() {
 }
 
 function download_workflow_attachment() {
-  python3 -c "from sapporo.run import download_workflow_attachment; download_workflow_attachment('${run_dir}')" || executor_error
+  local grdm_token=$(jq -r '.tags | fromjson | .grdm_token' ${run_request})
+  local base_url="https://api.rdm.nii.ac.jp/v2/"
+  local project_id=$(jq -r '.tags | fromjson | .project_id' ${run_request})
+
+  jq -c '.workflow_attachment | fromjson | .[]' ${run_request} | while read -r line; do
+    file_name=$(echo "$line" | jq -r '.file_name')
+    file_url=$(echo "$line" | jq -r '.file_url') # rdm 上の file path とする
+    OSF_TOKEN=${grdm_token} osf --base-url ${base_url} -p ${project_id} fetch ${file_url} ${exe_dir}/${file_name} || executor_error
+  done
 }
 
 function generate_outputs_list() {
@@ -150,12 +158,16 @@ function generate_ro_crate() {
 }
 
 function upload() {
-  local protocol=$(jq -r 'select(.tags != null) | .tags | fromjson | .export_output.protocol' ${run_request})
-  case ${protocol} in
-  's3')
-    upload_to_s3
-    ;;
-  esac
+  local grdm_token=$(jq -r '.tags | fromjson | .grdm_token' ${run_request})
+  local base_url="https://api.rdm.nii.ac.jp/v2/"
+  local project_id=$(jq -r '.tags | fromjson | .project_id' ${run_request})
+
+  local up_stdout="${run_dir}/upload.stdout.log"
+  local up_stderr="${run_dir}/upload.stderr.log"
+  local cmd_txt="OSF_TOKEN=${grdm_token} osf --base-url ${base_url} -p ${project_id} upload -r ${run_dir} /sapporo_run 1>>${up_stdout} 2>>${up_stderr}"
+
+  echo ${cmd_txt} >>${up_stdout}
+  eval ${cmd_txt} || uploader_error
 }
 
 function upload_to_s3() {
