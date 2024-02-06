@@ -97,7 +97,7 @@ You can use the native Sapporo authentication mechanism for Sapporo authenticati
 Since it is still under development, I are building the [Dockerfile-dev](`./Dockerfile-dev`) and pushing it to ghcr.io (<https://github.com/RCOSDP/CS-sapporo-service/pkgs/container/cs-sapporo-service>).
 Also, we have prepared a compose file using the image that has already been pushed, [compose.dev-deploy.yml](`./compose.dev-deploy.yml`).
 
-Image の build と push は以下のように行います。
+Build and push the image as follows:
 
 ```bash
 $ docker buildx build \
